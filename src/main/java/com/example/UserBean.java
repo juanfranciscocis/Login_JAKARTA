@@ -40,6 +40,6 @@ public class UserBean implements Serializable {
         // login logic
         // if login is successful, add user to ApplicationBean
         applicationBean.addUser(new User(username, password));
-        return "index?faces-redirect=true";
+        return "table?faces-redirect=true";
     }
 }

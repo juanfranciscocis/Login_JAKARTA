@@ -11,11 +11,9 @@
 	<h:form>
 		<h:outputLabel for="username" value="Username:" />
 		<h:inputText id="username" value="#{userBean.username}" required="true" />
-		<h:message for="username" style="color:red" />
 
 		<h:outputLabel for="password" value="Password:" />
 		<h:inputSecret id="password" value="#{userBean.password}" required="true" />
-		<h:message for="password" style="color:red" />
 
 		<h:commandButton value="Login" action="#{userBean.login}" />
 	</h:form>
