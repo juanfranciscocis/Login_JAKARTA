@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+    <title>Chat!</title>
+    <h:outputStylesheet library="css" name="style.css"/>
+</h:head>
+<h:body>
+    <h1>#{applicationBean.loggedInUsers[applicationBean.loggedInUsers.size() - 1].username} you are logged in</h1>
+    <h3>Public Chat</h3>
+    <h:form prependId="false">
+        <div id="wrapper">
+            <div id="menu">
+                <p class="logout">
+                    <h:commandLink id="end" value="Exit Chat" action="#{logChat.endSession}">
+                        <f:ajax/>
+                    </h:commandLink>
+                </p>
+                <div style="clear:both"></div>
+            </div>
+            <div id="chatbox">
+                <h:dataTable id="msgTable" value="#{applicationBean.loggedInUsers}" var="t" border="0">
+                    <h:column>
+                        <f:facet name="header"></f:facet>
+                        <h:commandButton id="privButton" value="#{t.username}" action="#{applicationBean.sendMessagesPriv(t.username)}">
+                        </h:commandButton>
+                    </h:column>
+                </h:dataTable>
+                <!-- show the username and message -->
+                <h:dataTable id="updateMsg" value="#{applicationBean.messages}" var="t" border="0">
+                    <h:column>
+                        <f:facet name="header"></f:facet>
+                        <h:outputText value="#{t.username} : #{t.message}"/>
+                    </h:column>
+                </h:dataTable>
+                <h:inputText id="msg" value="#{messages.message}"/>
+                <h:commandButton id="cmd" value="send" action="#{messages.updateTable}">
+                    <f:ajax execute="msg"/>
+                </h:commandButton>
+                <h3>Private Chat</h3>
+                <h:dataTable id="updatemsgpriv" value="#{applicationBean.messagesPriv}" var="t" border="0" rendered="#{messages.privateVisible}">
+                    <h:column>
+                        <f:facet name="header"></f:facet>
+                        <h:outputText value="#{t.username} : #{t.message}"/>
+                    </h:column>
+                </h:dataTable>
+                <h:inputText id="msgpriv" value="#{messages.messagepriv}"/>
+                <h:commandButton id="cmdpriv" value="send" action="#{messages.updateTablePriv}">
+                    <f:ajax execute="msgpriv"/>
+                </h:commandButton>
+            </div>
+
+        </div>
+    </h:form>
+    <h:form>
+        <f:websocket channel="push">
+            <f:ajax event="updateNotifications" render=":updateMsg"/>
+        </f:websocket>
+    </h:form>
+    <h:form>
+        <f:websocket channel="priv">
+            <f:ajax event="updateUsers" render=":msgTable"/>
+        </f:websocket>
+    </h:form>
+    <h:form>
+        <f:websocket channel="priv">
+            <f:ajax event="updateNotifications" render=":updatemsgpriv"/>
+        </f:websocket>
+    </h:form>
+    <h:form>
+        <f:websocket channel="priv">
+            <f:ajax event="showprivate" render=":updatemsgpriv"/>
+        </f:websocket>
+    </h:form>
+</h:body>
+</html>
